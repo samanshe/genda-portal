@@ -31,17 +31,15 @@
   Signing you in...
 </div>
 <script>
-  // Microsoft sends the OAuth code in the URL hash (#)
-  // because we use response_mode=fragment
-  // Zoho Sites never blocks hash parameters — only query params
-  // We read the hash and redirect to the portal homepage with it as a query string
-  var hash = window.location.hash;
-  if (hash && hash.length > 1) {
-    // Convert hash to query string and send to portal homepage
-    window.location.replace("https://tandeapprovals.zohosites.ca/?" + hash.substring(1));
+  // Microsoft redirects here with ?code= in the URL
+  // Azure Static Web Apps passes query params to JS — no blocking
+  // Redirect to the portal (index.html) on the same Azure domain
+  // passing all the OAuth params along
+  var params = window.location.search;
+  if (params.includes("code=") || params.includes("error=")) {
+    window.location.replace("https://orange-flower-06cdcc30f.7.azurestaticapps.net/" + params);
   } else {
-    // No hash — just go home
-    window.location.replace("https://tandeapprovals.zohosites.ca/");
+    window.location.replace("https://orange-flower-06cdcc30f.7.azurestaticapps.net/");
   }
 </script>
 </body>
