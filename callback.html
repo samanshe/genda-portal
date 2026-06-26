@@ -35,10 +35,10 @@
   // so the portal can read it even if Azure strips URL params
   var params = window.location.search;
   if (params.includes("code=")) {
-    sessionStorage.setItem("oauth_callback_params", params);
+    localStorage.setItem("oauth_callback_params", params);
     window.location.replace("https://orange-flower-06cdcc30f.7.azurestaticapps.net/");
   } else if (params.includes("error=")) {
-    sessionStorage.setItem("oauth_callback_params", params);
+    localStorage.setItem("oauth_callback_params", params);
     window.location.replace("https://orange-flower-06cdcc30f.7.azurestaticapps.net/");
   } else {
     window.location.replace("https://orange-flower-06cdcc30f.7.azurestaticapps.net/");
