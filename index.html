@@ -311,13 +311,21 @@ async function startLogin() {
 }
 
 async function handleCallback() {
-  const p     = new URLSearchParams(window.location.search);
+  // Check cached session first
+  const cached = sessionStorage.getItem(STORE_KEY);
+
+  // Read OAuth params from sessionStorage (set by callback.html)
+  // or from URL directly (fallback)
+  const callbackParams = sessionStorage.getItem("oauth_callback_params");
+  const paramString = callbackParams || window.location.search;
+  const p     = new URLSearchParams(paramString);
   const code  = p.get("code");
   const state = p.get("state");
   const err   = p.get("error");
 
-  // Check cached session first
-  const cached = sessionStorage.getItem(STORE_KEY);
+  // Clear the stored callback params
+  if (callbackParams) sessionStorage.removeItem("oauth_callback_params");
+
   if (cached && !code) {
     showPortal(JSON.parse(cached));
     return;

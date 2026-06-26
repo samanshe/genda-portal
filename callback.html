@@ -31,13 +31,15 @@
   Signing you in...
 </div>
 <script>
-  // Microsoft redirects here with ?code= in the URL
-  // Azure Static Web Apps passes query params to JS — no blocking
-  // Redirect to the portal (index.html) on the same Azure domain
-  // passing all the OAuth params along
+  // Store the entire query string in sessionStorage
+  // so the portal can read it even if Azure strips URL params
   var params = window.location.search;
-  if (params.includes("code=") || params.includes("error=")) {
-    window.location.replace("https://orange-flower-06cdcc30f.7.azurestaticapps.net/" + params);
+  if (params.includes("code=")) {
+    sessionStorage.setItem("oauth_callback_params", params);
+    window.location.replace("https://orange-flower-06cdcc30f.7.azurestaticapps.net/");
+  } else if (params.includes("error=")) {
+    sessionStorage.setItem("oauth_callback_params", params);
+    window.location.replace("https://orange-flower-06cdcc30f.7.azurestaticapps.net/");
   } else {
     window.location.replace("https://orange-flower-06cdcc30f.7.azurestaticapps.net/");
   }
