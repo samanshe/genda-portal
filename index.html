@@ -56,7 +56,6 @@
   </style>
 </head>
 <body>
-
 <div class="topbar">
   <div class="topbar-logo">GENDA <span>Americas</span></div>
   <div class="topbar-user" id="topbar-user">
@@ -65,7 +64,6 @@
     <button class="sign-out" onclick="signOut()">Sign out</button>
   </div>
 </div>
-
 <div class="main">
   <div id="login-state">
     <div class="login-card">
@@ -85,7 +83,6 @@
       <div class="login-error" id="login-error"></div>
     </div>
   </div>
-
   <div id="portal-state">
     <div class="profile-bar">
       <div class="profile-avatar" id="profile-avatar"></div>
@@ -105,13 +102,11 @@
     </div>
   </div>
 </div>
-
 <script>
 const CONFIG = {
   CLIENT_ID:    "3f026079-4216-4110-b041-6355f230aeff",
   TENANT_ID:    "85103847-332a-40be-93be-9f6e3b395308",
   REDIRECT_URI: "https://orange-flower-06cdcc30f.7.azurestaticapps.net/callback",
-
   forms: [
         {
       id:           "te-approval-v2",
@@ -131,46 +126,63 @@ const CONFIG = {
         "Dropdown":    "department",
         "SingleLine": "jobTitle"
       }
+    },
+    {
+      id:           "purchase-preapproval-v1",
+      title:        "Purchase Pre-Approval",
+      description:  "Purchasing pre-approval request for vendor commitments, equipment, and lease agreements.",
+      icon:         "🧾",
+      color:        "#c2410c",
+      bgColor:      "#fff1e6",
+      tag:          "Purchasing",
+      tagColor:     "#fff1e6",
+      tagTextColor: "#c2410c",
+      zohoFormUrl:  "https://forms.genda-americas.com/gendaamericas1/form/Purchasepreapproval/formperma/0uOQiu1PonUjOCh3x5iPolKNUwU6hI7BL7deDrRG98Y",
+      prefillFields: {
+        "Name_First":  "firstName",
+        "Name_Last":   "lastName",
+        "Email":       "email",
+        "Dropdown":    "department",
+        "SingleLine": "jobTitle"
+      }
     }
   ],
-
   policies: [
     {
       title:       "Travel & Expense Policy",
       description: "Full T&E policy including approval thresholds, meal caps, and reimbursement rules.",
       icon:        "📋",
       url:         "https://tandeapprovals.zohosites.ca/policy"
+    },
+    {
+      title:       "Purchasing Pre-Approval Policy",
+      description: "Approval authority matrix, PO requirements, and purchasing exceptions following Business Central implementation.",
+      icon:        "📦",
+      url:         "http://tandeapprovals.zohosites.ca/purchase-pre-approval-policy"
     }
   ]
 };
-
 const AUTHORITY = "https://login.microsoftonline.com/" + CONFIG.TENANT_ID;
 const SCOPES    = "openid profile email User.Read";
 const STORE_KEY = "genda_portal_profile";
-
 function b64url(buf) {
   return btoa(String.fromCharCode(...new Uint8Array(buf)))
     .replace(/\+/g,"-").replace(/\//g,"_").replace(/=/g,"");
 }
-
 async function pkce() {
   const verifier  = b64url(crypto.getRandomValues(new Uint8Array(32)));
   const hash      = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier));
   const challenge = b64url(hash);
   return { verifier, challenge };
 }
-
 async function startLogin() {
   document.getElementById("ms-btn").disabled = true;
   document.getElementById("login-status").textContent = "Connecting to Microsoft...";
   document.getElementById("login-error").style.display = "none";
-
   const { verifier, challenge } = await pkce();
   const state = b64url(crypto.getRandomValues(new Uint8Array(16)));
-
   localStorage.setItem("pkce_v",      verifier);
   localStorage.setItem("oauth_state", state);
-
   const params = new URLSearchParams({
     client_id:             CONFIG.CLIENT_ID,
     response_type:         "code",
@@ -182,10 +194,8 @@ async function startLogin() {
     code_challenge_method: "S256",
     prompt:                "select_account"
   });
-
   window.location.href = AUTHORITY + "/oauth2/v2.0/authorize?" + params;
 }
-
 async function handleCallback() {
   const cached = localStorage.getItem(STORE_KEY);
   const callbackParams = localStorage.getItem("oauth_callback_params");
@@ -194,21 +204,15 @@ async function handleCallback() {
   const code  = p.get("code");
   const state = p.get("state");
   const err   = p.get("error");
-
   if (callbackParams) localStorage.removeItem("oauth_callback_params");
-
   if (cached && !code) { showPortal(JSON.parse(cached)); return; }
   if (err) { showLoginError("Microsoft login failed: " + (p.get("error_description") || err)); return; }
   if (!code) return;
-
   const verifier   = localStorage.getItem("pkce_v");
   const savedState = localStorage.getItem("oauth_state");
-
   if (!verifier)            { showLoginError("Session expired. Please try again."); return; }
   if (state !== savedState) { showLoginError("Security check failed. Please try again."); return; }
-
   document.getElementById("login-status").textContent = "Signing you in...";
-
   const tokenResp = await fetch(AUTHORITY + "/oauth2/v2.0/token", {
     method:  "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -221,28 +225,21 @@ async function handleCallback() {
       scope:         SCOPES
     })
   });
-
   const tokens = await tokenResp.json();
   if (tokens.error) { showLoginError("Token error: " + (tokens.error_description || tokens.error)); return; }
-
   document.getElementById("login-status").textContent = "Loading your profile...";
-
   const profileResp = await fetch(
     "https://graph.microsoft.com/v1.0/me?$select=id,displayName,givenName,surname,mail,userPrincipalName,department,jobTitle",
     { headers: { Authorization: "Bearer " + tokens.access_token } }
   );
-
   const u = await profileResp.json();
   if (u.error) { showLoginError("Could not load profile: " + u.error.message); return; }
-
   window.history.replaceState({}, document.title, window.location.pathname);
   localStorage.removeItem("pkce_v");
   localStorage.removeItem("oauth_state");
   localStorage.setItem(STORE_KEY, JSON.stringify(u));
-
   showPortal(u);
 }
-
 function showPortal(u) {
   const firstName = u.givenName   || (u.displayName || "").split(" ")[0] || "";
   const lastName  = u.surname     || (u.displayName || "").split(" ").slice(1).join(" ") || "";
@@ -250,9 +247,7 @@ function showPortal(u) {
   const dept      = u.department  || "";
   const title     = u.jobTitle    || "";
   const initials  = ((firstName[0] || "") + (lastName[0] || "")).toUpperCase();
-
   window._profile = { firstName, lastName, email, dept, title, id: u.id };
-
   document.getElementById("topbar-avatar").textContent = initials;
   document.getElementById("topbar-name").textContent   = firstName;
   document.getElementById("topbar-user").classList.add("visible");
@@ -260,7 +255,6 @@ function showPortal(u) {
   document.getElementById("profile-name").textContent   = u.displayName || (firstName + " " + lastName);
   document.getElementById("profile-meta").textContent   = (title ? title + " · " : "") + email;
   document.getElementById("profile-dept").textContent   = dept || "Department not set in Azure AD";
-
   const grid = document.getElementById("forms-grid");
   CONFIG.forms.forEach(form => {
     const card = document.createElement("a");
@@ -278,7 +272,6 @@ function showPortal(u) {
       </div>`;
     grid.appendChild(card);
   });
-
   const policyContainer = document.getElementById("policy-links");
   CONFIG.policies.forEach(policy => {
     const link = document.createElement("a");
@@ -294,11 +287,9 @@ function showPortal(u) {
       <span class="policy-link-arrow">→</span>`;
     policyContainer.appendChild(link);
   });
-
   document.getElementById("login-state").style.display  = "none";
   document.getElementById("portal-state").style.display = "block";
 }
-
 function buildFormUrl(form) {
   const p = window._profile;
   const graphValues = {
@@ -314,13 +305,11 @@ function buildFormUrl(form) {
   });
   return form.zohoFormUrl + "?" + params.toString();
 }
-
 function signOut() {
   localStorage.removeItem(STORE_KEY);
   window.location.href = AUTHORITY + "/oauth2/v2.0/logout?post_logout_redirect_uri=" +
     encodeURIComponent("https://orange-flower-06cdcc30f.7.azurestaticapps.net/");
 }
-
 handleCallback();
 </script>
 </body>
