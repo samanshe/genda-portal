@@ -98,7 +98,7 @@
     <div class="policy-links" id="policy-links"></div>
     <div class="footer">
       GENDA Americas Employee Portal · Questions? Contact
-      <a href="mailto:ITSERVICES@genda-americas.com" style="color:#0078d4">itservices@genda-americas.com</a>
+      <a href="mailto:finance@genda-americas.com" style="color:#0078d4">finance@genda-americas.com</a>
     </div>
   </div>
 </div>
@@ -265,6 +265,46 @@ const CONFIG = {
         "Name_Last":  "lastName",
         "Email":      "email"
       }
+    },
+    // ────────────────────────── HR forms (Microsoft Forms) ──────────────────────────
+    {
+      id:           "workplace-injury-report",
+      title:        "Employee First Report of Injury",
+      description:  "Workplace injury/illness report — file the first report following any workplace incident.",
+      icon:         "🩹",
+      color:        "#be123c",
+      bgColor:      "#fdf1f4",
+      tag:          "HR",
+      tagColor:     "#fdf1f4",
+      tagTextColor: "#be123c",
+      zohoFormUrl:  "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=RzgQhSozvkCTvp9uOzlTCMZH7xyhpeJAl0nRjvjanzVUQVpCMzlYVlk3Q1BFNjBVMTNNNDBMTDM4Sy4u",
+      prefillFields: {}
+    },
+    {
+      id:           "customer-incident-report",
+      title:        "Customer Incident / Liability Report",
+      description:  "Report a customer incident, general liability issue, or property damage.",
+      icon:         "⚠️",
+      color:        "#be123c",
+      bgColor:      "#fdf1f4",
+      tag:          "HR",
+      tagColor:     "#fdf1f4",
+      tagTextColor: "#be123c",
+      zohoFormUrl:  "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=RzgQhSozvkCTvp9uOzlTCF65_E--ecxCvZDGs9rN8BxUOFVYOFJNNjgwN0cyNTNRNjZRS0xGNlJSMy4u",
+      prefillFields: {}
+    },
+    {
+      id:           "stock-trading-application",
+      title:        "Application for Trading of the Company's Own Stock",
+      description:  "Request approval to buy or sell shares of the company's own stock.",
+      icon:         "📈",
+      color:        "#1e40af",
+      bgColor:      "#eaf0fe",
+      tag:          "Compliance",
+      tagColor:     "#eaf0fe",
+      tagTextColor: "#1e40af",
+      zohoFormUrl:  "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=z9Xk1H46bUutxXTJrS00ASgVk5rU2ylLl5pawbcyhM9UNkpLODEzV0RDNk1RR0tNSEM2WTNKMUdNVy4u",
+      prefillFields: {}
     }
     // ───────────────────────────── End new forms ─────────────────────────────
   ],
@@ -421,11 +461,14 @@ function buildFormUrl(form) {
     department: p.dept,
     jobTitle:   p.title
   };
+  const entries = Object.entries(form.prefillFields || {});
+  if (entries.length === 0) return form.zohoFormUrl;
   const params = new URLSearchParams({ zf_prefill_live: "true" });
-  Object.entries(form.prefillFields).forEach(([zohoParam, graphField]) => {
+  entries.forEach(([zohoParam, graphField]) => {
     params.set(zohoParam, graphValues[graphField] || "");
   });
-  return form.zohoFormUrl + "?" + params.toString();
+  const separator = form.zohoFormUrl.includes("?") ? "&" : "?";
+  return form.zohoFormUrl + separator + params.toString();
 }
 function signOut() {
   localStorage.removeItem(STORE_KEY);
