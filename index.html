@@ -4,6 +4,10 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>GENDA Americas — Employee Portal</title>
+  <!-- Core values typography (matches the poster). Falls back to system fonts if blocked. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;800;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f6f9; min-height: 100vh; color: #1a1a2e; }
@@ -53,6 +57,119 @@
     .policy-link-icon { font-size: 18px; width: 24px; text-align: center; }
     .policy-link-arrow { margin-left: auto; font-size: 14px; color: #aaa; }
     .footer { text-align: center; font-size: 12px; color: #aaa; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e8eaed; line-height: 1.7; }
+
+    /* ═══════════════════════════════ CORE VALUES ═══════════════════════════════ */
+    :root { --cv-orange: #f7931e; --cv-orange-dk: #e07b00; --cv-navy: #0f1923; --cv-gray: #4a4f57; }
+    .core-values {
+      font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #fff; border: 0.5px solid #e2e6ea; border-radius: 16px;
+      padding: 36px 24px 32px; margin-bottom: 24px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    /* soft orange glow drifting behind the section */
+    .core-values::before {
+      content: ""; position: absolute; width: 420px; height: 420px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(247,147,30,.10), transparent 70%);
+      top: -200px; left: -120px; animation: cvDrift 14s ease-in-out infinite alternate; pointer-events: none;
+    }
+
+    /* Heading */
+    .cv-our { font-size: 22px; font-weight: 500; letter-spacing: .32em; color: var(--cv-navy); padding-left: .32em;
+              animation: cvFadeDown .6s ease-out both; }
+    .cv-title-row { display: flex; align-items: center; justify-content: center; gap: 18px; margin: 2px 0 6px; }
+    .cv-line { height: 3px; width: 64px; background: var(--cv-orange); border-radius: 2px; transform-origin: center;
+               animation: cvGrowLine .7s .35s ease-out both; }
+    .cv-title { font-size: 46px; font-weight: 900; line-height: 1.05; color: var(--cv-navy); letter-spacing: .01em; }
+    .cv-title span { display: inline-block; animation: cvLetterDrop .5s cubic-bezier(.34,1.56,.64,1) both; animation-delay: calc(.15s + var(--l) * .04s); }
+    .cv-title span.sp { width: .3em; }
+    .cv-title:hover span { animation: cvLetterWave .6s ease-in-out; animation-delay: calc(var(--l) * .04s); }
+    .cv-star-row { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 28px; }
+    .cv-star-row .cv-line { width: 180px; height: 2px; }
+    .cv-star { width: 26px; height: 26px; fill: var(--cv-orange); animation: cvStarSpin 6s ease-in-out infinite; }
+
+    /* Grid of 5 values */
+    .cv-grid { display: grid; grid-template-columns: repeat(5, 1fr); position: relative; }
+    .cv-item {
+      padding: 6px 12px 8px; position: relative; cursor: pointer; border-radius: 12px;
+      animation: cvPopIn .7s cubic-bezier(.34,1.56,.64,1) backwards; animation-delay: calc(.6s + var(--i) * .15s);
+      transition: transform .25s ease, background .25s ease;
+    }
+    .cv-item + .cv-item::before { content: ""; position: absolute; left: 0; top: 8%; bottom: 8%; width: 1px; background: #dcdfe3; }
+    .cv-item:hover { transform: translateY(-6px); background: #fff8f0; }
+    .cv-item.cv-spotlight { animation: cvShake .7s ease-in-out; background: #fff8f0; }
+    .cv-item.cv-clicked { animation: cvJelly .6s ease; }
+
+    .cv-icon {
+      width: 84px; height: 84px; margin: 0 auto 14px; border-radius: 50%;
+      border: 3px solid var(--cv-orange); display: flex; align-items: center; justify-content: center;
+      background: #fff; transition: background .3s, box-shadow .3s, transform .3s;
+      animation: cvFloat 4s ease-in-out infinite; animation-delay: calc(var(--i) * -.8s);
+    }
+    .cv-icon svg { width: 46px; height: 46px; fill: var(--cv-orange); transition: fill .3s; overflow: visible; }
+    .cv-item:hover .cv-icon, .cv-item.cv-spotlight .cv-icon { background: var(--cv-orange); box-shadow: 0 0 0 8px rgba(247,147,30,.18), 0 8px 24px rgba(247,147,30,.35); }
+    .cv-item:hover .cv-icon svg, .cv-item.cv-spotlight .cv-icon svg { fill: #fff; }
+    .cv-item:hover .cv-icon svg .stroke, .cv-item.cv-spotlight .cv-icon svg .stroke { stroke: #fff; }
+    .cv-icon svg .stroke { fill: none; stroke: var(--cv-orange); transition: stroke .3s; }
+
+    /* Each value's icon has its own personality */
+    .cv-anim-respect   svg { animation: cvHeartbeat 2.4s ease-in-out infinite; transform-origin: center; }
+    .cv-anim-challenge svg { animation: cvClimb 3s ease-in-out infinite; }
+    .cv-anim-energy    svg { animation: cvZap 2.2s ease-in-out infinite; transform-origin: center; }
+    .cv-anim-delight   svg .wand { animation: cvWave 2.6s ease-in-out infinite; transform-origin: 30% 80%; transform-box: fill-box; }
+    .cv-anim-delight   svg .spark { animation: cvTwinkle 1.6s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
+    .cv-anim-delight   svg .spark:nth-of-type(2) { animation-delay: .5s; }
+    .cv-anim-delight   svg .spark:nth-of-type(3) { animation-delay: 1s; }
+    .cv-anim-positive  svg { animation: cvWobble 3.2s ease-in-out infinite; transform-origin: center; }
+    /* hover makes each one go big */
+    .cv-item:hover .cv-anim-respect svg   { animation: cvHeartbeat .6s ease-in-out infinite; }
+    .cv-item:hover .cv-anim-challenge svg { animation: cvClimb .8s ease-in-out infinite; }
+    .cv-item:hover .cv-anim-energy svg    { animation: cvZap .5s linear infinite; }
+    .cv-item:hover .cv-anim-positive svg  { animation: cvSpin .9s ease-in-out; }
+
+    .cv-name { font-size: 17px; font-weight: 800; line-height: 1.2; color: var(--cv-navy); text-transform: uppercase; margin-bottom: 8px; transition: color .25s; }
+    .cv-item:hover .cv-name { color: var(--cv-orange-dk); }
+    .cv-desc { font-size: 12.5px; line-height: 1.55; color: var(--cv-gray); }
+
+    /* Keyframes */
+    @keyframes cvFadeDown   { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: none; } }
+    @keyframes cvGrowLine   { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    @keyframes cvLetterDrop { 0% { opacity: 0; transform: translateY(-40px) rotate(-12deg); } 100% { opacity: 1; transform: none; } }
+    @keyframes cvLetterWave { 0%,100% { transform: none; } 50% { transform: translateY(-8px); color: var(--cv-orange); } }
+    @keyframes cvStarSpin   { 0%,70%,100% { transform: rotate(0) scale(1); } 80% { transform: rotate(144deg) scale(1.35); } 90% { transform: rotate(216deg) scale(.9); } }
+    @keyframes cvPopIn      { 0% { opacity: 0; transform: translateY(40px) scale(.7); } 100% { opacity: 1; transform: none; } }
+    @keyframes cvFloat      { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    @keyframes cvShake      { 0%,100% { transform: none; } 15% { transform: translateX(-6px) rotate(-3deg); } 30% { transform: translateX(6px) rotate(3deg); }
+                              45% { transform: translateX(-5px) rotate(-2deg); } 60% { transform: translateX(4px) rotate(1deg); } 75% { transform: translateX(-2px); } }
+    @keyframes cvJelly      { 0%,100% { transform: scale(1); } 30% { transform: scale(1.12,.88); } 50% { transform: scale(.92,1.08); } 70% { transform: scale(1.04,.96); } }
+    @keyframes cvHeartbeat  { 0%,100% { transform: scale(1); } 15% { transform: scale(1.15); } 30% { transform: scale(1); } 45% { transform: scale(1.1); } }
+    @keyframes cvClimb      { 0%,100% { transform: translateY(2px); } 50% { transform: translateY(-5px); } }
+    @keyframes cvZap        { 0%,60%,100% { transform: none; opacity: 1; } 65% { transform: translateX(-3px) rotate(-8deg); opacity: .5; }
+                              70% { transform: translateX(3px) rotate(8deg); opacity: 1; } 75% { transform: translateX(-2px); opacity: .6; } 80% { transform: none; opacity: 1; } }
+    @keyframes cvWave       { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-14deg); } 60% { transform: rotate(10deg); } }
+    @keyframes cvTwinkle    { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(.4); opacity: .3; } }
+    @keyframes cvWobble     { 0%,100% { transform: rotate(0); } 20% { transform: rotate(-12deg); } 40% { transform: rotate(10deg); } 60% { transform: rotate(-6deg); } 80% { transform: rotate(3deg); } }
+    @keyframes cvSpin       { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+    @keyframes cvDrift      { from { transform: translate(0,0); } to { transform: translate(760px, 320px); } }
+
+    /* Responsive */
+    @media (max-width: 860px) {
+      .cv-grid { grid-template-columns: repeat(3, 1fr); row-gap: 24px; }
+      .cv-item:nth-child(4)::before { display: none; }
+      .cv-title { font-size: 36px; }
+    }
+    @media (max-width: 560px) {
+      .cv-grid { grid-template-columns: repeat(2, 1fr); }
+      .cv-item::before { display: none; }
+      .cv-item:last-child { grid-column: 1 / -1; }
+      .cv-title { font-size: 28px; }
+      .cv-line { width: 28px; }
+      .cv-star-row .cv-line { width: 80px; }
+      .cv-our { font-size: 16px; }
+    }
+    /* Respect users who turn off motion in their OS */
+    @media (prefers-reduced-motion: reduce) {
+      .core-values *, .core-values::before { animation: none !important; transition: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -84,6 +201,22 @@
     </div>
   </div>
   <div id="portal-state">
+    <!-- ══════════ CORE VALUES (top of page, above profile) ══════════ -->
+    <section class="core-values" id="core-values" aria-label="Our core values">
+      <div class="cv-our">OUR</div>
+      <div class="cv-title-row">
+        <span class="cv-line"></span>
+        <h2 class="cv-title" id="cv-title">CORE VALUES</h2>
+        <span class="cv-line"></span>
+      </div>
+      <div class="cv-star-row">
+        <span class="cv-line"></span>
+        <svg class="cv-star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.6l-6.4 3.5L7 14l-5.3-5 7.2-.9z"/></svg>
+        <span class="cv-line"></span>
+      </div>
+      <div class="cv-grid" id="cv-grid"></div>
+    </section>
+
     <div class="profile-bar">
       <div class="profile-avatar" id="profile-avatar"></div>
       <div class="profile-info">
@@ -107,6 +240,15 @@ const CONFIG = {
   CLIENT_ID:    "3f026079-4216-4110-b041-6355f230aeff",
   TENANT_ID:    "85103847-332a-40be-93be-9f6e3b395308",
   REDIRECT_URI: "https://orange-flower-06cdcc30f.7.azurestaticapps.net/callback",
+  // ─────────────────────────────── Core values ───────────────────────────────
+  // anim: respect | challenge | energy | delight | positive  (picks icon + motion)
+  coreValues: [
+    { name: "Respect<br>Everyone",          anim: "respect",   desc: "Personally and organizationally vital, affirming our commitment to value every person." },
+    { name: "Love the<br>Challenge",        anim: "challenge", desc: "Nurturing a culture that embraces challenges and continuously pushes forward." },
+    { name: "Bring the<br>Energy",          anim: "energy",    desc: "Capturing passion, engagement, and emotional spirit in our work." },
+    { name: "Delight the<br>Customer",      anim: "delight",   desc: "We are committed to exceeding expectations and delivering memorable experiences at every touchpoint." },
+    { name: "Stay Positive.<br>Have Fun.",  anim: "positive",  desc: "Fostering the atmosphere we all deserve to work in." }
+  ],
   forms: [
         {
       id:           "te-approval-v2",
@@ -369,6 +511,77 @@ const CONFIG = {
 const AUTHORITY = "https://login.microsoftonline.com/" + CONFIG.TENANT_ID;
 const SCOPES    = "openid profile email User.Read";
 const STORE_KEY = "genda_portal_profile";
+
+// ─────────────────────────────── Core values rendering ───────────────────────────────
+const CV_ICONS = {
+  // hands raised around a person
+  respect: `<svg viewBox="0 0 48 48" aria-hidden="true">
+      <circle cx="24" cy="12" r="6.5"/>
+      <path d="M17 21h14v6l-3 3v13h-8V30l-3-3z"/>
+      <path d="M6 10a2.5 2.5 0 015 0v12l5 5v16H9V30l-3-4z"/>
+      <path d="M42 10a2.5 2.5 0 00-5 0v12l-5 5v16h7V30l3-4z"/></svg>`,
+  // mountain peaks
+  challenge: `<svg viewBox="0 0 48 48" aria-hidden="true">
+      <path d="M2 42L17 22l4 5 7-15 18 30h-6L28 22l-5 10-3-4-4 5-6 9z"/></svg>`,
+  // lightning bolt
+  energy: `<svg viewBox="0 0 48 48" aria-hidden="true">
+      <path d="M28 2L10 27h12l-4 19 20-28H26z"/></svg>`,
+  // magic wand + sparkles
+  delight: `<svg viewBox="0 0 48 48" aria-hidden="true">
+      <g class="wand"><rect x="20" y="8" width="7" height="38" rx="3.5" transform="rotate(42 23.5 27)"/></g>
+      <path class="spark" d="M9 6l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/>
+      <path class="spark" d="M21 1l1.2 2.8L25 5l-2.8 1.2L21 9l-1.2-2.8L17 5l2.8-1.2z"/>
+      <path class="spark" d="M39 24l1.8 4.2L45 30l-4.2 1.8L39 36l-1.8-4.2L33 30l4.2-1.8z"/></svg>`,
+  // smiley face
+  positive: `<svg viewBox="0 0 48 48" aria-hidden="true">
+      <circle class="stroke" cx="24" cy="24" r="19" stroke-width="4"/>
+      <path class="stroke" d="M15 20q3-4 6 0M27 20q3-4 6 0" stroke-width="3.5" stroke-linecap="round"/>
+      <path class="stroke" d="M14 28q10 10 20 0" stroke-width="4" stroke-linecap="round"/></svg>`
+};
+
+let _cvTimer = null;
+function renderCoreValues() {
+  const grid = document.getElementById("cv-grid");
+  if (!grid || grid.childElementCount) return;          // render once
+
+  // split title into letters so they can drop in / wave individually
+  const title = document.getElementById("cv-title");
+  title.innerHTML = [...title.textContent].map((ch, i) =>
+    ch === " " ? `<span class="sp" style="--l:${i}"> </span>` : `<span style="--l:${i}">${ch}</span>`).join("");
+
+  CONFIG.coreValues.forEach((v, i) => {
+    const item = document.createElement("div");
+    item.className = "cv-item";
+    item.style.setProperty("--i", i);
+    item.innerHTML = `
+      <div class="cv-icon cv-anim-${v.anim}">${CV_ICONS[v.anim] || ""}</div>
+      <div class="cv-name">${v.name}</div>
+      <div class="cv-desc">${v.desc}</div>`;
+    // click = jelly bounce
+    item.addEventListener("click", () => {
+      item.classList.remove("cv-clicked"); void item.offsetWidth; item.classList.add("cv-clicked");
+    });
+    item.addEventListener("animationend", e => {
+      if (e.target === item) item.classList.remove("cv-clicked", "cv-spotlight");
+    });
+    grid.appendChild(item);
+  });
+
+  // Spotlight: every few seconds one value shakes and lights up, in turn
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const items = [...grid.children];
+  let n = 0;
+  clearInterval(_cvTimer);
+  setTimeout(() => {
+    _cvTimer = setInterval(() => {
+      if (document.hidden) return;
+      const el = items[n % items.length];
+      if (!el.matches(":hover")) { el.classList.remove("cv-spotlight"); void el.offsetWidth; el.classList.add("cv-spotlight"); }
+      n++;
+    }, 3000);
+  }, 2200);                                               // start after the entrance animation
+}
+
 function b64url(buf) {
   return btoa(String.fromCharCode(...new Uint8Array(buf)))
     .replace(/\+/g,"-").replace(/\//g,"_").replace(/=/g,"");
@@ -493,6 +706,7 @@ function showPortal(u) {
   });
   document.getElementById("login-state").style.display  = "none";
   document.getElementById("portal-state").style.display = "block";
+  renderCoreValues();   // render after the section is visible so the entrance animation plays
 }
 function buildFormUrl(form) {
   const p = window._profile;
